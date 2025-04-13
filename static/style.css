@@ -1,0 +1,1085 @@
+/* Basic Reset & Body Styling */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    margin: 20px auto;
+    overflow: hidden;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Navigation */
+nav {
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav h1 {
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #ddd;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.form-group textarea {
+    resize: vertical; /* Allow vertical resizing */
+}
+
+.form-group small {
+    color: #666;
+    font-size: 0.9em;
+}
+
+button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Job Details */
+.job-details pre {
+    background-color: #eee;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    white-space: pre-wrap; /* Wrap long lines */
+    word-wrap: break-word;
+}
+
+/* Flash Messages */
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: opacity 0.5s ease-out; /* Added transition for fade out */
+}
+
+.alert.fade-out {
+    opacity: 0; /* Target state for fade out */
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-error {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px;
+    color: #777;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #ddd;
+    margin: 20px 0;
+}
+
+/* Dark Theme */
+body.dark-theme {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.dark-theme a {
+    color: #61afef;
+    text-decoration: none;
+}
+
+.dark-theme a:hover {
+    text-decoration: underline;
+    color: #82c0ff;
+}
+
+/* Container */
+.dark-theme .container {
+    width: 85%;
+    max-width: 1100px; /* Max width for larger screens */
+    margin: 30px auto; /* Re-added auto margin for centering */
+    margin-bottom: 30px; /* Keep bottom margin */
+    background: #282c34; /* Slightly lighter container background */
+    padding: 30px;
+    border-radius: 8px; /* Softer corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3f4b;
+    /* flex-shrink: 0; */ /* Removed flex property */
+    position: relative; /* ENSURE this is set */
+    overflow: visible !important; /* Allow positioned children to overflow */
+}
+
+/* Navigation */
+.dark-theme nav {
+    background: #21252b; /* Slightly different nav background */
+    padding: 15px 0;
+    border-bottom: 1px solid #3a3f4b;
+    text-align: center; /* Keep centered */
+}
+
+.dark-theme nav h1 {
+    color: #ffffff;
+    margin: 0 0 10px 0; /* Space below title */
+    font-size: 1.8em;
+    font-weight: 500;
+}
+
+.dark-theme nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dark-theme nav ul li {
+    display: inline-block; /* Use inline-block for better spacing control */
+    margin: 0 10px;
+    vertical-align: middle; /* Align items vertically */
+}
+
+.dark-theme nav a {
+    color: #98c379; /* Greenish accent for nav links */
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark-theme nav a:hover {
+    color: #ffffff;
+    background-color: #3a3f4b;
+    text-decoration: none;
+}
+
+.dark-theme nav a.active {
+    color: #ffffff;
+    background-color: #61afef; /* Active link background */
+    font-weight: 500;
+}
+
+/* Headings */
+.dark-theme h2 {
+    color: #e5c07b; /* Yellowish color for headings */
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-weight: 500;
+    border-bottom: 1px solid #3a3f4b;
+    padding-bottom: 10px;
+}
+.dark-theme h3 {
+    color: #e0e0e0;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* Forms */
+.dark-theme .form-group {
+    margin-bottom: 20px;
+}
+
+.dark-theme .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #abb2bf; /* Lighter label color */
+    font-weight: 500;
+}
+
+.dark-theme .form-control,
+.dark-theme .form-group input[type="text"],
+.dark-theme .form-group input[type="password"],
+.dark-theme .form-group textarea,
+.dark-theme .form-group select {
+    background-color: #21252b; /* Darker input background */
+    color: #e0e0e0;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px; /* Softer corners */
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark-theme .form-control:focus,
+.dark-theme .form-group input[type="text"]:focus,
+.dark-theme .form-group input[type="password"]:focus,
+.dark-theme .form-group textarea:focus,
+.dark-theme .form-group select:focus {
+    border-color: #61afef;
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 0 3px rgba(97, 175, 239, 0.2);
+}
+
+.dark-theme .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.dark-theme .form-group small {
+    color: #888;
+    font-size: 0.85em;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Buttons */
+.dark-theme button,
+.dark-theme .btn {
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.dark-theme .btn:active {
+    transform: translateY(1px); /* Subtle press effect */
+}
+
+.dark-theme .btn-primary {
+    background-color: #61afef;
+    color: #1e1e1e; /* Dark text on primary button */
+}
+
+.dark-theme .btn-primary:hover {
+    background-color: #82c0ff;
+}
+
+.dark-theme .btn-secondary {
+    background-color: #4b5263;
+    color: #e0e0e0;
+}
+
+.dark-theme .btn-secondary:hover {
+    background-color: #5c6370;
+}
+
+.dark-theme .btn-danger {
+    background-color: #e06c75; /* Softer red */
+    color: #1e1e1e;
+}
+
+.dark-theme .btn-danger:hover {
+    background-color: #f07f88;
+}
+
+.dark-theme .btn-sm {
+    padding: 6px 12px;
+    font-size: 0.9em;
+}
+
+/* Tables */
+.dark-theme table {
+    border-collapse: separate; /* Use separate for border-radius */
+    border-spacing: 0;
+    width: 100%;
+    margin-top: 20px;
+    border: 1px solid #3a3f4b;
+    border-radius: 8px;
+    overflow: hidden; /* Clip content to rounded corners */
+}
+
+.dark-theme th, .dark-theme td {
+    border-bottom: 1px solid #3a3f4b;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.dark-theme td {
+    background-color: #2c313a;
+}
+
+.dark-theme th {
+    background-color: #3a3f4b;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+/* Remove bottom border from last row cells */
+.dark-theme tr:last-child td {
+    border-bottom: none;
+}
+
+.dark-theme td a {
+    font-weight: 500;
+}
+
+/* Job Details & Preformatted Text */
+.dark-theme .job-details pre {
+    background-color: #21252b;
+    border: 1px solid #3a3f4b;
+    color: #abb2bf; /* Lighter grey for code/pre */
+    padding: 15px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 0.95em;
+}
+
+/* Flash Messages */
+.dark-theme .flash-messages {
+    margin-bottom: 25px;
+}
+
+.dark-theme .alert {
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+
+.dark-theme .alert-success,
+.dark-theme .alert-job-created { /* Apply same style */
+    color: #d1fae5;
+    background-color: #059669;
+    border-color: #047857;
+}
+
+.dark-theme .alert-danger {
+    color: #fee2e2;
+    background-color: #dc2626;
+    border-color: #b91c1c;
+}
+
+.dark-theme .alert-warning {
+    color: #fef3c7;
+    background-color: #d97706;
+    border-color: #b45309;
+}
+
+.dark-theme .alert-info {
+    color: #dbeafe;
+    background-color: #2563eb;
+    border-color: #1d4ed8;
+}
+
+/* Footer */
+.dark-theme footer {
+    color: #888;
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #3a3f4b;
+}
+
+/* Utility */
+.dark-theme hr {
+    border: 0;
+    height: 1px;
+    background: #3a3f4b;
+    margin: 30px 0;
+}
+
+/* Auth forms */
+.dark-theme .auth-form {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #21252b; /* Different background for auth box */
+    border: 1px solid #3a3f4b;
+    border-radius: 8px;
+}
+.dark-theme .auth-form h2 {
+    text-align: center;
+    border-bottom: none; /* Remove border for auth heading */
+}
+.dark-theme .auth-form p {
+    text-align: center;
+    margin-top: 20px;
+    color: #abb2bf;
+}
+
+/* Form helpers */
+.dark-theme ul.errors {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+    color: #e06c75; /* Match danger button */
+    font-size: 0.9em;
+}
+.dark-theme .has-error .form-control {
+    border-color: #e06c75;
+}
+.dark-theme .has-error .form-control:focus {
+     box-shadow: 0 0 0 3px rgba(224, 108, 117, 0.2);
+}
+
+/* Inline Form for token generation */
+.dark-theme .inline-form {
+    display: flex;
+    align-items: flex-end; /* Align items bottom */
+    gap: 15px; /* Space between items */
+}
+.dark-theme .inline-form .form-group {
+    margin-bottom: 0; /* Remove bottom margin */
+    flex-grow: 1; /* Allow input to grow */
+    max-width: 200px; /* Limit input width */
+}
+.dark-theme .inline-form button {
+     margin-bottom: 0; /* Remove bottom margin */
+}
+
+/* Admin Nav */
+.dark-theme ul.admin-nav {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+}
+.dark-theme ul.admin-nav li {
+    margin-bottom: 10px;
+}
+.dark-theme ul.admin-nav a {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #4b5263;
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+.dark-theme ul.admin-nav a:hover {
+    background-color: #5c6370;
+    text-decoration: none;
+}
+
+/* Objective List Styling */
+.dark-theme ul.objectives-list {
+    list-style: none;
+    padding-left: 0; /* Remove default padding */
+    margin-top: 10px;
+}
+
+.dark-theme ul.objectives-list li {
+    margin-bottom: 8px;
+    background-color: #21252b;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #3a3f4b;
+}
+.dark-theme ul.objectives-list li strong {
+    color: #abb2bf; /* Objective key color */
+}
+
+.dark-theme .objective-true {
+    color: #98c379; /* Green */
+    font-weight: bold;
+}
+
+.dark-theme .objective-false {
+    color: #e06c75; /* Red */
+    font-weight: bold;
+}
+
+/* User Dropdown Menu */
+.dark-theme .nav-item.dropdown {
+    position: relative;
+}
+
+.dark-theme .dropdown-toggle {
+    cursor: pointer;
+    padding: 5px 10px; /* Match other nav links */
+    border-radius: 4px; /* Match other nav links */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.dark-theme .dropdown-toggle:hover {
+    color: #ffffff;
+    background-color: #3a3f4b;
+    text-decoration: none;
+}
+
+.dark-theme .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    /* Align right - adjust if needed */
+    right: 0; 
+    left: auto;
+    background-color: #282c34; /* Match container background */
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    min-width: 180px;
+    z-index: 1000;
+    padding: 8px 0;
+    margin-top: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.dark-theme .dropdown-menu a.dropdown-item {
+    display: block;
+    padding: 10px 20px;
+    color: #abb2bf; /* Dropdown text color */
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark-theme .dropdown-menu a.dropdown-item:hover {
+    background-color: #3a3f4b;
+    color: #ffffff;
+}
+
+.dark-theme .dropdown-menu a.dropdown-item.active {
+     background-color: #61afef;
+     color: #1e1e1e;
+     font-weight: 500;
+}
+
+/* Remove the explicit bolding for user span if dropdown toggle handles it */
+/* .dark-theme nav ul li span { 
+    font-weight: bold;
+} */
+
+/* --- Job List Boxes --- */
+.job-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Spacing between boxes */
+    margin-top: 20px;
+}
+
+.job-box {
+    background-color: #2c313a;
+    border: 1px solid #3a3f4b;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1 1 calc(33.333% - 20px); /* Responsive: 3 columns baseline, adjusts */
+    min-width: 280px; /* Minimum width before wrapping */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes actions to the bottom */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.job-box-header {
+    margin-bottom: 15px;
+}
+
+.job-scenario {
+    display: block;
+    font-weight: 600;
+    color: #e5c07b; /* Heading color */
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.job-subject {
+    display: block;
+    color: #abb2bf; /* Lighter grey */
+    font-size: 0.95em;
+}
+
+.job-box-status {
+    margin-bottom: 15px;
+    flex-grow: 1; /* Allows status section to grow */
+}
+
+.job-status-label {
+    font-style: italic;
+    color: #888;
+}
+
+.job-success-label {
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: #2d572c; /* Darker green background */
+    color: #98c379; /* Lighter green text */
+    border-radius: 5px;
+    font-weight: 600;
+    border: 1px solid #3a6b35;
+}
+
+.job-failed-objectives span {
+    font-weight: bold;
+    color: #e06c75; /* Red */
+    margin-right: 5px;
+}
+
+.job-failed-objectives ul {
+    list-style: none;
+    padding-left: 10px;
+    margin: 5px 0 0 0;
+}
+
+.failed-objective {
+    color: #e06c75; /* Red */
+    font-size: 0.9em;
+}
+
+/* Styling for Succeeded Objectives (when shown alongside failed) */
+.job-succeeded-objectives {
+    margin-top: 8px; /* Space between failed and succeeded lists */
+}
+
+.job-succeeded-objectives span {
+    font-weight: bold;
+    color: #98c379; /* Green */
+    margin-right: 5px;
+}
+
+.job-succeeded-objectives ul {
+    list-style: none;
+    padding-left: 10px;
+    margin: 5px 0 0 0;
+}
+
+.succeeded-objective {
+    color: #98c379; /* Green */
+    font-size: 0.9em;
+}
+
+/* Optional: Add border colors based on status */
+.job-box.status-success {
+    border-left: 5px solid #98c379; /* Green */
+}
+.job-box.status-failed {
+    border-left: 5px solid #e06c75; /* Red */
+}
+.job-box.status-processing {
+    border-left: 5px solid #61afef; /* Blue */
+}
+
+.job-box-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto; /* Pushes to bottom */
+    padding-top: 10px;
+    border-top: 1px solid #3a3f4b; /* Separator */
+}
+
+.job-time {
+    font-size: 0.85em;
+    color: #888;
+}
+
+/* Container for splitting failed/succeeded */
+.job-objectives-split {
+    display: flex;
+    gap: 15px; /* Space between the two lists */
+}
+
+/* Allow failed/succeeded sections to share space */
+.job-failed-objectives,
+.job-succeeded-objectives {
+    flex: 1; /* Each takes up half the space */
+    min-width: 0; /* Allows shrinking */
+}
+
+.job-failed-objectives span,
+.job-succeeded-objectives span {
+    display: block; /* Ensure labels are on their own line if needed */
+    margin-bottom: 3px;
+}
+
+.job-failed-objectives span {
+    font-weight: bold;
+    color: #e06c75; /* Red */
+    margin-right: 5px;
+}
+
+/* --- Profile Dropdown (in page content) --- */
+.profile-dropdown-container {
+    position: absolute;
+    /* Positioning: Absolute relative to .container, OUTSIDE top-left */
+    top: 10px; /* Position above container top edge */
+    left: -135px; /* Position left of container left edge */
+    /* right: 15px; */ /* Removed */
+    /* Ensure high enough z-index if needed, but maybe not necessary now */
+    /* z-index: 10; */
+}
+
+.profile-dropdown-toggle {
+    background-color: #4b5263;
+    color: #e0e0e0;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.profile-dropdown-toggle:hover {
+    background-color: #5c6370;
+}
+
+.profile-dropdown-toggle .arrow {
+    display: inline-block;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+}
+
+.profile-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    background-color: #21252b;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    min-width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 8px 0;
+    margin-top: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.profile-dropdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-load-btn {
+    flex-grow: 1;
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    color: #abb2bf;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    display: block;
+    width: 100%;
+}
+
+.profile-load-btn:hover {
+    background-color: #3a3f4b;
+    color: #ffffff;
+}
+
+.profile-delete-btn {
+    background: none;
+    border: none;
+    color: #e06c75;
+    padding: 10px 12px;
+    font-size: 1.1em;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    margin-left: 5px;
+    border-radius: 4px;
+}
+
+.profile-delete-btn:hover {
+    background-color: #e06c75;
+    color: #21252b;
+}
+
+.no-profiles {
+    color: #888;
+    padding: 10px 15px;
+    font-style: italic;
+}
+
+/* Adjust form actions styling if needed */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding-left: 0; 
+    transition: padding-left 0.3s ease;
+}
+.main-content.sidebar-collapsed {
+}
+
+/* NEW: Content Layout Wrapper */
+.content-layout-wrapper {
+    /* display: flex; */ /* Removed flex */
+    /* justify-content: center; */ /* Removed flex */
+    /* align-items: flex-start; */ /* Removed flex */
+    /* padding-top: 30px; */ /* Removed flex padding */
+    position: relative; /* Keep for potential future use or remove if unused */
+}
+
+/* --- Custom Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    top: 0px;
+    right: 0px;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    align-items: flex-end;
+}
+
+.notification {
+    background-color: #2c313a;
+    color: #e0e0e0;
+    padding: 15px 20px;
+    border-radius: 6px;
+    border: 1px solid #3a3f4b;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    min-width: 250px;
+    max-width: 400px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Type-specific styles */
+.notification-success {
+    background-color: #059669;
+    border-color: #047857;
+    color: #d1fae5;
+}
+
+.notification-error {
+    background-color: #dc2626;
+    border-color: #b91c1c;
+    color: #fee2e2;
+}
+
+.notification-warning {
+    background-color: #d97706;
+    border-color: #b45309;
+    color: #fef3c7;
+}
+
+.notification-info {
+    background-color: #2563eb;
+    border-color: #1d4ed8;
+    color: #dbeafe;
+}
+
+/* --- Confirmation Modal Specifics (uses .modal-overlay, .modal-box) --- */
+#confirmation-modal .modal-box {
+    max-width: 400px;
+}
+
+#confirmation-modal h3 {
+    text-align: left;
+}
+
+#confirmation-modal p {
+    text-align: left;
+}
+
+#confirmation-ok-btn {
+}
+
+/* Remove the explicit bolding for user span if dropdown toggle handles it */
+/* .dark-theme nav ul li span { 
+    font-weight: bold;
+} */
+
+/* --- Job Status Popup (Home Page) --- */
+.job-status-popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2500;
+    background-color: rgba(40, 44, 52, 0.9);
+    border: 1px solid #3a3f4b;
+    border-radius: 8px;
+    padding: 20px;
+    min-width: 300px;
+    max-width: 450px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    display: none;
+    color: #abb2bf;
+}
+
+.job-status-popup-content {
+    position: relative;
+}
+
+.job-status-popup-close {
+    position: absolute;
+    top: -10px;
+    right: -5px;
+    background: none;
+    border: none;
+    color: #abb2bf;
+    font-size: 1.8em;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    font-weight: bold;
+}
+
+.job-status-popup-close:hover {
+    color: #e06c75;
+}
+
+.job-status-popup h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #e5c07b;
+    border-bottom: 1px solid #3a3f4b;
+    padding-bottom: 10px;
+}
+
+#job-status-popup-body p {
+    margin-bottom: 10px;
+}
+
+#job-status-popup-body .objectives-list {
+    margin-top: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#job-status-popup-actions {
+    text-align: right;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #3a3f4b;
+}
+
+.job-status-popup .text-danger {
+    color: #e06c75 !important;
+    font-weight: bold;
+}
+
+/* Optional: Spinner styles if needed specifically here */
+/* .job-status-popup .spinner-border { ... } */ 

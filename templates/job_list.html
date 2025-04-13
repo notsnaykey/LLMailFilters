@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Job List{% endblock %}
+
+{% block content %}
+    <h2>Job List</h2>
+    {% if api_error %}
+        <p class="alert alert-danger">{{ api_error }}</p>
+    {% endif %}
+
+    <div class="job-list-container">
+        {% if jobs %}
+            {% for job in jobs %}
+                {# Determine success status based on objectives #}
+                {% set all_objectives_true = false %}
+                {% set has_failed_objectives = false %}
+                {% if job.is_completed and job.objectives and job.objectives is mapping %}
+                    {% set objective_values = job.objectives.values() | list %}
+                    {% if objective_values and objective_values is iterable and not false in objective_values %}
+                        {% set all_objectives_true = true %}
+                    {% elif false in objective_values %}
+                        {% set has_failed_objectives = true %}
+                    {% endif %}
+                {% endif %}
+
+                <div class="job-box status-{{ 'completed' if job.is_completed else 'processing' }} {% if all_objectives_true %}status-success{% elif has_failed_objectives %}status-failed{% endif %}">
+                    <div class="job-box-header">
+                        <span class="job-scenario">{{ job.scenario }}</span>
+                        <span class="job-subject">{{ job.subject | truncate(50) }}</span> {# Truncate long subjects #}
+                    </div>
+                    <div class="job-box-status">
+                        {% if all_objectives_true %}
+                            <span class="job-success-label">Success</span>
+                        {% elif has_failed_objectives %}
+                            {# New wrapper div #}
+                            <div class="job-objectives-split">
+                                <div class="job-failed-objectives">
+                                    <span>Failed:</span>
+                                    <ul>
+                                        {% for key, value in job.objectives.items() %}
+                                            {% if not value %}
+                                                <li class="failed-objective">{{ key }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="job-succeeded-objectives">
+                                    <span>Succeeded:</span>
+                                    <ul>
+                                        {% for key, value in job.objectives.items() %}
+                                            {% if value %}
+                                                <li class="succeeded-objective">{{ key }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div> {# End wrapper div #}
+                        {% elif job.is_completed %}
+                             <span class="job-status-label">Completed (No Objectives?)</span>
+                        {% else %}
+                            <span class="job-status-label">Processing...</span>
+                        {% endif %}
+                    </div>
+                     <div class="job-box-actions">
+                         <span class="job-time datetime-iso" data-iso-date="{{ job.scheduled_time }}">{{ job.scheduled_time }}</span>
+                         <a href="{{ url_for('get_job_route', job_id=job.job_id) }}" class="btn btn-secondary btn-sm">View Details</a>
+                     </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No jobs found for your team yet.</p>
+        {% endif %}
+    </div>
+
+    {% if not jobs %}
+        {# Only show create button if list is empty? Or always? Let's show always for now #}
+        <p style="margin-top: 20px;"><a href="{{ url_for('index') }}" class="btn btn-primary">Create New Job</a></p>
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Function to format ISO date string to local date/time
+        function formatIsoDateToLocal(isoString) {
+            if (!isoString) return '-';
+            try {
+                const date = new Date(isoString);
+                if (isNaN(date.getTime())) {
+                    console.warn("Invalid date string received:", isoString);
+                    return isoString;
+                }
+                const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
+                const optionsTime = { hour: 'numeric', minute: '2-digit' };
+                return `${date.toLocaleDateString(undefined, optionsDate)} ${date.toLocaleTimeString(undefined, optionsTime)}`;
+            } catch (e) {
+                console.error("Error formatting date:", isoString, e);
+                return isoString;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.datetime-iso').forEach(el => {
+                const isoDate = el.dataset.isoDate || el.textContent;
+                el.textContent = formatIsoDateToLocal(isoDate);
+            });
+        });
+    </script>
+{% endblock %} 

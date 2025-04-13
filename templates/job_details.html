@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Details{% endblock %}
+
+{% block content %}
+    <h2>Job Details</h2>
+    {% if job %}
+        <div class="job-details">
+            <p><strong>Team ID:</strong> {{ job.team_id }}</p>
+            <p><strong>Scenario:</strong> {{ job.scenario }}</p>
+            <p><strong>Subject:</strong> {{ job.subject }}</p>
+            <div>
+                <p><strong>Body:</strong></p>
+                <div style="position: relative;">
+                    <button onclick="copyJobBody()"
+                            style="position: absolute; top: 5px; left: 5px; z-index: 10; padding: 3px 7px; font-size: 0.9em; opacity: 0.9;"
+                            class="btn btn-sm btn-outline-secondary"
+                            title="Copy body to clipboard">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre id="job-body-content">{{ job.body }}</pre>
+                </div>
+            </div>
+            <p><strong>Scheduled Time (Local):</strong> <span class="datetime-iso" data-iso-date="{{ job.scheduled_time }}">{{ job.scheduled_time }}</span></p>
+
+            <div id="job-status" data-job-id="{{ job.job_id }}">
+                {% if job.is_completed %}
+                    <p><strong>Status:</strong> Completed</p>
+                    {# <p><strong>Started Time:</strong> {{ job.started_time }}</p> #}
+                    {# <p><strong>Completed Time:</strong> {{ job.completed_time }}</p> #}
+                    {# <p><strong>Output:</strong></p>
+                    <pre>{{ job.output if job.output is not none else '-' }}</pre> #}
+                    <p><strong>Objectives:</strong></p>
+                    {% if job.objectives and job.objectives is mapping %}
+                        <ul class="objectives-list">
+                        {% for key, value in job.objectives.items() %}
+                            <li><strong>{{ key }}:</strong> <span class="objective-{{ 'true' if value else 'false' }}">{{ value }}</span></li>
+                        {% endfor %}
+                        </ul>
+                    {% elif job.objectives %}
+                        <pre>{{ job.objectives }}</pre> {# Fallback for non-dict objectives #}
+                    {% else %}
+                        <p>-</p>
+                    {% endif %}
+                {% else %}
+                    <p><strong>Status:</strong> Processing...</p>
+                    <p>(Page will attempt to auto-refresh results below)</p>
+                    <div id="status-objectives">
+                         <p><strong>Objectives:</strong> Waiting...</p>
+                    </div>
+                    <button onclick="checkJobStatus('{{ job.job_id }}')" class="btn btn-secondary btn-sm">Check Status Now</button>
+                     <p id="polling-status"></p>
+                {% endif %}
+            </div>
+        </div>
+    {% elif api_error %}
+         <p class="alert alert-danger">{{ api_error }}</p>
+    {% else %}
+        <p class="alert alert-warning">Job details could not be loaded or job not found.</p>
+    {% endif %}
+    <p><a href="{{ url_for('list_jobs_route') }}" class="btn btn-secondary">Back to Job List</a></p>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // --- Functions moved outside DOMContentLoaded ---
+
+        // Reusable function to format ISO date string to local date/time
+        function formatIsoDateToLocal(isoString) {
+             if (!isoString) return '-'; // Handle cases where time might be missing
+            try {
+                const date = new Date(isoString);
+                // Check if date is valid
+                if (isNaN(date.getTime())) {
+                    console.warn("Invalid date string received:", isoString);
+                    return isoString; // Return original string if invalid
+                }
+                // Format using locale settings for date and time
+                const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
+                const optionsTime = { hour: 'numeric', minute: '2-digit' };
+                return `${date.toLocaleDateString(undefined, optionsDate)} ${date.toLocaleTimeString(undefined, optionsTime)}`;
+            } catch (e) {
+                console.error("Error formatting date:", isoString, e);
+                return isoString; // Return original string on error
+            }
+        }
+
+        // Global variable for polling interval ID
+        let jobDetailsIntervalId = null;
+
+        // Function to render objectives nicely
+        function renderObjectives(objectivesData) {
+            if (!objectivesData || typeof objectivesData !== 'object') {
+                return '<p>-</p>';
+            }
+            let objectivesHtml = '<p><strong>Objectives:</strong></p><ul class="objectives-list">';
+            for (const [key, value] of Object.entries(objectivesData)) {
+                const valueClass = value ? 'objective-true' : 'objective-false';
+                objectivesHtml += `<li><strong>${key}:</strong> <span class="${valueClass}">${value}</span></li>`;
+            }
+            objectivesHtml += '</ul>';
+            return objectivesHtml;
+        }
+
+        function checkJobStatus(jobId) {
+            const jobStatusDiv = document.getElementById('job-status'); // Get elements inside the function
+            const statusObjectives = document.getElementById('status-objectives');
+            const pollingStatus = document.getElementById('polling-status');
+
+            if (pollingStatus) pollingStatus.textContent = 'Checking status...';
+            fetch(`/job_status/${jobId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                             throw new Error(`HTTP error ${response.status}: ${text}`);
+                        });
+                    }
+                    const contentType = response.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        throw new Error(`Expected JSON response, but got ${contentType}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error fetching job status:', data.error);
+                         if (pollingStatus) pollingStatus.textContent = `Error: ${data.error}`;
+                        stopPolling();
+                        return;
+                    }
+
+                    if (data.completed) {
+                        if (pollingStatus) pollingStatus.textContent = 'Job completed!';
+                        stopPolling();
+
+                        // Update the page content directly
+                        if (jobStatusDiv) { // Check if element exists before updating
+                            jobStatusDiv.innerHTML = `
+                                <p><strong>Status:</strong> Completed</p>
+                                ${renderObjectives(data.objectives)}
+                            `;
+                        }
+                    } else {
+                         if (pollingStatus) pollingStatus.textContent = 'Still processing... Checking again in 30s.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch job status:', error);
+                    if (pollingStatus) pollingStatus.textContent = `Status Check Error: ${error.message}`;
+                    stopPolling(); // Stop polling on fetch error
+                });
+        }
+
+        function startPolling(jobId) {
+            const pollingStatus = document.getElementById('polling-status'); // Get element inside the function
+            if (pollingStatus) pollingStatus.textContent = 'Polling started...';
+            checkJobStatus(jobId); // Initial check
+            // Clear any existing interval before starting a new one
+            if (jobDetailsIntervalId) {
+                clearInterval(jobDetailsIntervalId);
+            }
+            jobDetailsIntervalId = setInterval(() => checkJobStatus(jobId), 30000);
+        }
+
+        function stopPolling() {
+            if (jobDetailsIntervalId) {
+                clearInterval(jobDetailsIntervalId);
+                jobDetailsIntervalId = null;
+                const pollingStatus = document.getElementById('polling-status'); // Get element inside the function
+                 if (pollingStatus && pollingStatus.textContent.includes('Checking')) {
+                     pollingStatus.textContent = 'Polling stopped.';
+                 }
+                 console.log("Polling stopped for job details page.");
+            }
+        }
+
+        function copyJobBody() {
+            const bodyContent = document.getElementById('job-body-content');
+            const textToCopy = bodyContent.innerText;
+            const copyButton = event.target.closest('button'); // Get the button that was clicked
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Success feedback (optional)
+                const originalText = copyButton.innerHTML;
+                copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                setTimeout(() => {
+                    copyButton.innerHTML = originalText;
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000); // Revert after 2 seconds
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                // Error feedback (optional)
+                 const originalText = copyButton.innerHTML;
+                copyButton.innerHTML = '<i class="fas fa-times"></i> Error';
+                 copyButton.classList.remove('btn-outline-secondary');
+                 copyButton.classList.add('btn-danger');
+                 setTimeout(() => {
+                    copyButton.innerHTML = originalText;
+                     copyButton.classList.remove('btn-danger');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            });
+        }
+
+        // --- End of moved functions ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Convert all elements with the 'datetime-iso' class on this page
+            document.querySelectorAll('.datetime-iso').forEach(el => {
+                 const isoDate = el.dataset.isoDate || el.textContent;
+                 if (isoDate) { // Only format if there is a date
+                    el.textContent = formatIsoDateToLocal(isoDate);
+                 }
+            });
+
+            // Get elements needed for polling logic
+            const jobStatusDiv = document.getElementById('job-status');
+
+            // Start polling if the job is not completed when the page loads
+            if (jobStatusDiv) {
+                 // Extract job ID from the data attribute (safer than URL parsing)
+                 const jobId = jobStatusDiv.dataset.jobId;
+                 // Check if the job is not already completed (by looking for objectives list presence or status text)
+                 const isCompleted = jobStatusDiv.querySelector('.objectives-list') || jobStatusDiv.textContent.includes('Completed');
+
+                 if (jobId && !isCompleted) {
+                      console.log("Starting polling for job:", jobId);
+                      startPolling(jobId);
+                 } else if (jobId) {
+                     console.log("Job already completed, not starting polling:", jobId);
+                 } else {
+                     console.log("No job ID found or job status div missing.");
+                 }
+            } else {
+                 console.log("Job status div not found.");
+            }
+        });
+
+         // Ensure polling stops if the user navigates away
+         window.addEventListener('beforeunload', stopPolling);
+
+    </script>
+{% endblock %} 

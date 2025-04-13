@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}LLMail Helper{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="dark-theme">
+    {# Sidebar Toggle Button Removed #}
+    {# page-wrapper div Removed #}
+    {# Profile Sidebar Removed #}
+
+    {# Main Content Area - Now directly under body #}
+    <main id="main-content" class="main-content">
+        <nav>
+            <h1>API Interface</h1>
+            <ul>
+                {# Use request.endpoint to check active page #}
+                <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' else '' }}">Home / Create Job</a></li>
+                <li><a href="{{ url_for('list_jobs_route') }}" class="{{ 'active' if request.endpoint == 'list_jobs_route' else '' }}">List Jobs</a></li>
+                <li><a href="{{ url_for('get_team_route') }}" class="{{ 'active' if request.endpoint == 'get_team_route' else '' }}">API Team Details</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                        {# Check if endpoint starts with 'admin' for all admin pages #}
+                        <li><a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint.startswith('admin') else '' }}">Admin Panel</a></li>
+                    {% endif %}
+                    {# User Dropdown #}
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle" id="userDropdownToggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            User: {{ current_user.username }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="userDropdownToggle">
+                            <a class="dropdown-item {{ 'active' if request.endpoint == 'change_password' else '' }}" href="{{ url_for('change_password') }}">Change Password</a>
+                            <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                        </div>
+                    </li>
+                {% else %}
+                    <li><a href="{{ url_for('register') }}" class="{{ 'active' if request.endpoint == 'register' else '' }}">Register</a></li>
+                    <li><a href="{{ url_for('login') }}" class="{{ 'active' if request.endpoint == 'login' else '' }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        {# --- Wrapper for Flexbox Layout --- #}
+        <div class="content-layout-wrapper">
+
+            {# --- REMOVED: Profiles Dropdown Section (Moved inside .container) --- #}
+            {# {% if request.endpoint == 'index' %}
+                <div class="profile-dropdown-container">
+                    ...
+                </div>
+            {% endif %} #}
+
+            <div class="container">
+                {# --- MOVED: Profiles Dropdown Section --- #}
+                {% if request.endpoint == 'index' %}
+                    <div class="profile-dropdown-container">
+                        <button id="profile-dropdown-toggle" class="profile-dropdown-toggle">
+                            Profiles <span class="arrow">&#9662;</span>
+                        </button>
+                        <div id="profile-dropdown-menu" class="profile-dropdown-menu">
+                            <div id="profile-dropdown-list" class="profile-list">
+                                <p>Loading profiles...</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {# --- End Profiles Dropdown Section --- #}
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                        {% for category, message in messages %}
+                            {% set alert_class = 'info' %}
+                            {% if category == 'danger' or category == 'error' %}
+                                {% set alert_class = 'danger' %}
+                            {% elif category == 'success' %}
+                                {% set alert_class = 'success' %}
+                            {% elif category == 'warning' %}
+                                {% set alert_class = 'warning' %}
+                            {% elif category == 'job-created' %}
+                                {% set alert_class = 'success job-created' %}
+                            {% endif %}
+                            <div class="alert alert-{{ alert_class }}">{{ message }}</div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+
+        </div> {# --- End content-layout-wrapper --- #}
+
+        <footer>
+            <p>API Client</p>
+        </footer>
+    </main>
+    {# End main-content wrapper #}
+
+    {# Scripts at the end of body #}
+    {% block scripts %}{% endblock %}
+    {# Basic Dropdown Toggle Script (for user menu) #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userDropdownToggle = document.getElementById('userDropdownToggle');
+            const userDropdownMenu = document.querySelector('li.dropdown .dropdown-menu'); // More specific selector
+
+            if (userDropdownToggle && userDropdownMenu) {
+                userDropdownToggle.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    let isDisplayed = userDropdownMenu.style.display === 'block';
+                    userDropdownMenu.style.display = isDisplayed ? 'none' : 'block';
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!userDropdownToggle.contains(event.target) && !userDropdownMenu.contains(event.target)) {
+                        userDropdownMenu.style.display = 'none';
+                    }
+                });
+            }
+
+            // --- NEW: Auto-dismiss flash messages ---
+            const flashMessages = document.querySelectorAll('.flash-messages .alert');
+            flashMessages.forEach(message => {
+                // Start fade out slightly before removal
+                setTimeout(() => {
+                    message.classList.add('fade-out');
+                }, 4500); // 4.5 seconds
+
+                // Remove the element after fade out completes
+                setTimeout(() => {
+                    message.remove();
+                }, 5000); // 5 seconds total
+            });
+            // --- End Auto-dismiss --- 
+        });
+    </script>
+    {# Include profiles script (will be needed by index.html) #}
+    <script src="{{ url_for('static', filename='profiles.js') }}"></script>
+    {# Include notifications script #}
+    <script src="{{ url_for('static', filename='notifications.js') }}"></script>
+
+    {# Notification Container (fixed position) #}
+    <div id="notification-container"></div>
+
+    {# Reusable Confirmation Modal (Hidden by default) #}
+    <div id="confirmation-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3 id="confirmation-title">Confirmation</h3>
+            <p id="confirmation-message">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="confirmation-cancel-btn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmation-ok-btn" class="btn btn-danger">OK</button> {# Often uses danger style #}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html> 

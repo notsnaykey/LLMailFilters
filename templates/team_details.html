@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}API Team Details{% endblock %}
+
+{% block content %}
+    <h2>API Team Details</h2>
+    {% if team %}
+        <p>These details are fetched from the Competition API using the configured API key.</p>
+        <p><strong>Name:</strong> {{ team.name }}</p>
+        {# <p><strong>ID:</strong> {{ team.team_id }}</p> #}
+        <p><strong>Score:</strong> {{ team.score }}</p>
+        <p><strong>Current Members:</strong> {{ team.members|join(', ') }}</p>
+
+        <hr>
+        <h3>Update API Team Members</h3>
+        <form method="post" action="{{ url_for('update_team_route') }}">
+            <div class="form-group">
+                <label for="members">Members (comma-separated):</label>
+                <input type="text" id="members" name="members" value="{{ team.members|join(', ') }}" required class="form-control" placeholder="Enter GitHub usernames, comma-separated">
+            </div>
+            <button type="submit" class="btn btn-primary">Update Members via API</button>
+        </form>
+    {% elif error %}
+        <p class="alert alert-danger">Error fetching API team details: {{ error }}</p>
+    {% elif client %}
+         <p class="alert alert-warning">Could not load API team details. Is the API Key valid and associated with a team?</p>
+    {% else %}
+         <p class="alert alert-danger">API Client is not configured. Cannot fetch or update team details.</p>
+    {% endif %}
+{% endblock %} 

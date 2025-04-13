@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% from '_form_helpers.html' import render_field %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <div class="auth-form">
+        <h2>Register New Account</h2>
+        <p>A valid registration token (provided by an admin) is required.</p>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.username, placeholder='Choose a username') }}
+            {{ render_field(form.password, placeholder='Create a password (min 6 chars)') }}
+            {{ render_field(form.confirm_password, placeholder='Confirm your password') }}
+            {{ render_field(form.registration_token, placeholder='Enter registration token') }}
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+         <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+{% endblock %} 

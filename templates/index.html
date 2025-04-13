@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% from '_form_helpers.html' import render_field %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+    {# --- Profiles Dropdown Section Removed (moved to base.html) --- #}
+
+    <h2>Create New Job (via API)</h2>
+    {% if not client._is_key_placeholder() %}
+        <form method="post" action="{{ url_for('create_job_route') }}" id="create-job-form">
+            <div class="form-group">
+                <label for="scenario">Scenario:</label>
+                <select id="scenario" name="scenario" required class="form-control">
+                    <option value="" disabled selected>Select a scenario</option>
+                    {% for scenario_info in scenarios %}
+                        <option value="{{ scenario_info.id }}">{{ scenario_info.display }}</option>
+                    {% else %}
+                        <option value="" disabled>No scenarios loaded (check jobs.html)</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required class="form-control" placeholder="Email Subject Line">
+            </div>
+            <div class="form-group">
+                <label for="body">Body:</label>
+                <textarea id="body" name="body" rows="5" required class="form-control" placeholder="Enter the body content for the job submission..."></textarea>
+            </div>
+            {# Container for buttons #}
+            <div class="form-actions">
+                <button type="submit" id="create-job-submit-btn" class="btn btn-primary">Create Job</button>
+                <button type="button" id="save-profile-btn" class="btn btn-secondary">Save as Profile</button>
+            </div>
+        </form>
+
+        {# --- NEW: Job Status Popup (Hidden by default) --- #}
+        <div id="job-status-popup" class="job-status-popup" style="display: none;">
+            <div class="job-status-popup-content">
+                <button class="job-status-popup-close" onclick="closeJobStatusPopup()">&times;</button>
+                <h3>Job Status</h3>
+                <div id="job-status-popup-body">
+                    <p>Processing job...</p>
+                    {# Content will be updated dynamically #}
+                </div>
+                <div id="job-status-popup-actions" style="display: none; margin-top: 15px;">
+                     <a href="#" id="job-status-popup-details-link" class="btn btn-sm btn-info">View Details</a>
+                </div>
+            </div>
+        </div>
+        {# --- End Job Status Popup --- #}
+
+    {% else %}
+        {# Message about API key not configured is already flashed by the route #}
+        <p class="alert alert-warning">API features are disabled because the API Key is not configured.</p>
+    {% endif %}
+
+    {# Display API Error if occurred during team fetch #}
+    {% if api_error %}
+         <p class="alert alert-danger">{{ api_error }}</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Current API Team Details</h2>
+    {% if not client._is_key_placeholder() and team %}
+        <p><strong>Name:</strong> {{ team.name }}</p>
+        {# <p><strong>ID:</strong> {{ team.team_id }}</p> #} {# Removed Team ID #}
+        <p><strong>Score:</strong> {{ team.score }}</p>
+        <p><strong>Members:</strong> {{ team.members|join(', ') }}</p>
+        <p><a href="{{ url_for('get_team_route') }}" class="btn btn-secondary">View/Edit API Team Members</a></p>
+    {% elif not client._is_key_placeholder() and not api_error %}
+         {# We tried fetching but got no team (and no other error) #}
+         {# Message about this is already flashed by the route #}
+         <p>Could not display API team details.</p>
+    {% elif client._is_key_placeholder() %}
+         <p>API features are disabled.</p>
+    {% endif %}
+
+    {# --- Custom Save Profile Modal (Hidden by default) --- #}
+    <div id="save-profile-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3>Save Profile</h3>
+            <p>Enter a name for this profile:</p>
+            <input type="text" id="profile-name-input" class="form-control" placeholder="Profile Name">
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+                <button id="modal-save-btn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+    {# --- End Modal --- #}
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }} {# Include scripts from base template if any #}
+<script>
+    // --- Job Status Popup Logic ---
+    let jobStatusPopupTimeoutId = null; // Store timeout ID for polling
+
+    // Copy of renderObjectives from job_details.html (consider moving to shared JS)
+    function renderObjectives(objectivesData) {
+        if (!objectivesData || typeof objectivesData !== 'object') {
+            return '<p>No objectives data available.</p>';
+        }
+        let objectivesHtml = '<h4>Objectives:</h4><ul class="objectives-list">'; // Use h4 for popup
+        for (const [key, value] of Object.entries(objectivesData)) {
+            const valueClass = value ? 'objective-true' : 'objective-false';
+            objectivesHtml += `<li><strong>${key}:</strong> <span class="${valueClass}">${value}</span></li>`;
+        }
+        objectivesHtml += '</ul>';
+        return objectivesHtml;
+    }
+
+    function pollJobStatus(jobId) {
+        console.log(`Polling status for job ${jobId}...`);
+        // Clear previous timeout if exists
+        if (jobStatusPopupTimeoutId) {
+            clearTimeout(jobStatusPopupTimeoutId);
+            jobStatusPopupTimeoutId = null;
+        }
+
+        fetch(`/job_status/${jobId}`)
+            .then(response => {
+                if (!response.ok) {
+                     // Attempt to read error response body
+                     return response.json().then(errData => {
+                        throw new Error(`HTTP error ${response.status}: ${errData.error || 'Unknown API error'}`);
+                     }).catch(() => {
+                        // Fallback if reading JSON fails
+                        throw new Error(`HTTP error ${response.status}`);
+                     });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('Error polling job status:', data.error);
+                    const popupBody = document.getElementById('job-status-popup-body');
+                    if (popupBody) popupBody.innerHTML = `<p class="text-danger">Error fetching status: ${data.error}</p>`;
+                    // Stop polling on error from API
+                    return;
+                }
+
+                const popupBody = document.getElementById('job-status-popup-body');
+                const popupActions = document.getElementById('job-status-popup-actions');
+                const detailsLink = document.getElementById('job-status-popup-details-link');
+
+                if (data.completed) {
+                    console.log(`Job ${jobId} completed.`);
+                    if (popupBody) {
+                         popupBody.innerHTML = renderObjectives(data.objectives);
+                    }
+                    if (detailsLink) {
+                         detailsLink.href = `/job/${jobId}`;
+                    }
+                    if (popupActions) {
+                         popupActions.style.display = 'block'; // Show actions
+                    }
+                    // Stop polling
+                } else {
+                    console.log(`Job ${jobId} still processing. Polling again in 5 seconds.`);
+                     if (popupBody) popupBody.innerHTML = '<p>Still processing job...</p>'; // Update status message
+                    // Schedule next poll
+                    jobStatusPopupTimeoutId = setTimeout(() => pollJobStatus(jobId), 5000); // Poll every 5 seconds
+                }
+            })
+            .catch(error => {
+                console.error('Failed to fetch job status:', error);
+                const popupBody = document.getElementById('job-status-popup-body');
+                if (popupBody) popupBody.innerHTML = `<p class="text-danger">Status Check Failed: ${error.message}</p>`;
+                // Stop polling on network/fetch error
+            });
+    }
+
+    function showJobStatusPopup() {
+        const popup = document.getElementById('job-status-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            // Optional: Animate in
+        }
+    }
+
+    function closeJobStatusPopup() {
+        const popup = document.getElementById('job-status-popup');
+        if (popup) {
+            popup.style.display = 'none';
+        }
+        // Stop polling when popup is closed
+        if (jobStatusPopupTimeoutId) {
+            clearTimeout(jobStatusPopupTimeoutId);
+            jobStatusPopupTimeoutId = null;
+            console.log("Polling stopped by closing popup.");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('create-job-form');
+        const submitButton = document.getElementById('create-job-submit-btn');
+        const popupBody = document.getElementById('job-status-popup-body');
+        const popupActions = document.getElementById('job-status-popup-actions');
+
+        // --- NEW: Form Persistence Logic ---
+        const scenarioSelect = document.getElementById('scenario');
+        const subjectInput = document.getElementById('subject');
+        const bodyTextarea = document.getElementById('body');
+
+        // Load saved values on page load
+        if (scenarioSelect) {
+            const savedScenario = localStorage.getItem('createJobScenario');
+            if (savedScenario) {
+                scenarioSelect.value = savedScenario;
+            }
+            scenarioSelect.addEventListener('change', () => {
+                localStorage.setItem('createJobScenario', scenarioSelect.value);
+            });
+        }
+        if (subjectInput) {
+            const savedSubject = localStorage.getItem('createJobSubject');
+            if (savedSubject) {
+                subjectInput.value = savedSubject;
+            }
+            subjectInput.addEventListener('input', () => {
+                localStorage.setItem('createJobSubject', subjectInput.value);
+            });
+        }
+        if (bodyTextarea) {
+            const savedBody = localStorage.getItem('createJobBody');
+            if (savedBody) {
+                bodyTextarea.value = savedBody;
+            }
+            bodyTextarea.addEventListener('input', () => {
+                localStorage.setItem('createJobBody', bodyTextarea.value);
+            });
+        }
+        // --- End Form Persistence Logic ---
+
+        // Existing form submission logic
+        if (form && submitButton) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent traditional form submission
+
+                // Disable button and show loading state
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
+
+                // Reset popup state
+                if (popupBody) popupBody.innerHTML = '<p>Submitting job...</p>';
+                if (popupActions) popupActions.style.display = 'none';
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    // Always re-enable button once response is received
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+
+                    if (!response.ok) {
+                        // Try to get error message from JSON response
+                        return response.json().then(errData => {
+                            throw new Error(errData.error || `HTTP error ${response.status}`);
+                        }).catch(() => {
+                             // Fallback if response isn't JSON
+                            throw new Error(`HTTP error ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        // Handle errors reported by the API (e.g., validation)
+                        console.error('Job creation API error:', data.error);
+                        // Use the global showNotification if available
+                        if (typeof showNotification === 'function') {
+                             showNotification(data.error, 'error');
+                        } else {
+                            alert(`Error: ${data.error}`); // Fallback
+                        }
+                    } else if (data.job_id) {
+                        console.log('Job created successfully, job_id:', data.job_id);
+                        // Optionally clear the form AND local storage after successful submission
+                        // form.reset();
+                        // localStorage.removeItem('createJobScenario');
+                        // localStorage.removeItem('createJobSubject');
+                        // localStorage.removeItem('createJobBody');
+
+                        if (popupBody) popupBody.innerHTML = '<p>Job submitted. Waiting for processing...</p>';
+                        showJobStatusPopup();
+                        pollJobStatus(data.job_id); // Start polling
+                    } else {
+                         throw new Error('Unexpected response from server.');
+                    }
+                })
+                .catch(error => {
+                    // Handle fetch errors (network issues, etc.) or errors thrown above
+                    console.error('Job creation fetch error:', error);
+                    // Re-enable button just in case it wasn't done yet
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                     // Use the global showNotification if available
+                    if (typeof showNotification === 'function') {
+                        showNotification(`Failed to create job: ${error.message}`, 'error');
+                    } else {
+                        alert(`Error: ${error.message}`); // Fallback
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %} 
