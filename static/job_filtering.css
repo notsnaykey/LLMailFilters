@@ -1,0 +1,671 @@
+/* Job Filtering and Tagging Styles */
+
+/* Filter/Sort Controls Container */
+.filter-sort-controls {
+    background-color: #21252b;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.filter-sort-controls h3 {
+    color: #e5c07b;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+/* Filter Section Layout */
+.filter-section, .sort-section {
+    margin-bottom: 15px;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #abb2bf;
+    font-weight: 500;
+}
+
+/* Sort Options */
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.sort-options select {
+    flex: 1;
+    max-width: 250px;
+}
+
+/* Tags System */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    min-height: 30px;
+}
+
+.tag-item {
+    background-color: #3a3f4b;
+    color: #abb2bf;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    cursor: pointer;
+    border: 1px solid #4b5263;
+    transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+    background-color: #4b5263;
+}
+
+.tag-item.active {
+    background-color: #2c4f7c;
+    color: #dbeafe;
+    border-color: #3b7dd8;
+}
+
+/* Tag Modal */
+.tag-management {
+    margin: 15px 0;
+}
+
+.add-tag-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.add-tag-form input {
+    flex: 1;
+}
+
+.all-tags-container {
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #282c34;
+    border: 1px solid #3a3f4b;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.tag-manager-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #3a3f4b;
+}
+
+.tag-manager-item:last-child {
+    border-bottom: none;
+}
+
+.tag-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.tag-delete-btn {
+    background-color: transparent;
+    color: #e06c75;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 0 5px;
+}
+
+.tag-delete-btn:hover {
+    color: #ff8a93;
+}
+
+/* Job Tag Display */
+.job-tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px 0;
+}
+
+.job-tag {
+    background-color: #2c4f7c;
+    color: #dbeafe;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+/* Job Tag Management */
+.job-tag-btn {
+    margin-right: 5px;
+}
+
+.job-copy-btn {
+    margin-right: 5px;
+}
+
+.job-tag-popup {
+    position: absolute;
+    background-color: #282c34;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    padding: 10px;
+    z-index: 9999; /* Ensure it's above everything else */
+    min-width: 200px;
+    max-width: 300px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+/* Add styling for when no tags exist */
+.no-tags-message {
+    color: #abb2bf;
+    font-style: italic;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    padding: 5px 0;
+}
+
+.job-tag-item {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #3a3f4b;
+}
+
+.job-tag-item:last-of-type {
+    border-bottom: none;
+    margin-bottom: 10px;
+}
+
+.job-tag-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.job-tag-item label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Make sure the manage button stands out */
+.job-tag-popup .btn {
+    width: 100%;
+    margin-top: 5px;
+}
+
+/* Make the buttons more distinct */
+.job-tag-btn {
+    background-color: #4b5263;
+    color: #abb2bf;
+    margin-right: 5px;
+}
+
+.job-tag-btn:hover {
+    background-color: #5c6370;
+    color: #ffffff;
+}
+
+.job-copy-btn {
+    background-color: #2c4f7c;
+    color: #dbeafe;
+    margin-right: 5px;
+}
+
+.job-copy-btn:hover {
+    background-color: #3b7dd8;
+    color: #ffffff;
+}
+
+/* Add visual feedback to show active tag button */
+.job-tag-btn.active {
+    background-color: #61afef;
+    color: #1e1e1e;
+}
+
+/* Reference Jobs Modal */
+.reference-jobs-list {
+    max-height: 350px;
+    overflow-y: auto;
+    background-color: #21252b;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    margin-top: 15px;
+}
+
+.reference-job-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #3a3f4b;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reference-job-item:last-child {
+    border-bottom: none;
+}
+
+.reference-job-item:hover {
+    background-color: #2c313a;
+}
+
+.reference-job-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #e5c07b;
+}
+
+.reference-job-item span {
+    display: block;
+    font-size: 0.9em;
+    color: #abb2bf;
+}
+
+.reference-job-item .ref-job-date {
+    font-size: 0.8em;
+    color: #7f8c98;
+    margin-top: 5px;
+}
+
+/* Job Comparison */
+.compare-selected-btn {
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.job-compare-container {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    user-select: none;
+}
+
+.job-compare-checkbox {
+    margin-right: 5px;
+}
+
+.job-compare-label {
+    font-size: 0.85em;
+    color: #abb2bf;
+    cursor: pointer;
+}
+
+/* Comparison Modal */
+.comparison-modal-box {
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.comparison-header {
+    margin-bottom: 20px;
+}
+
+.comparison-tabs {
+    display: flex;
+    border-bottom: 1px solid #3a3f4b;
+}
+
+.comparison-tab {
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    color: #abb2bf;
+    cursor: pointer;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+}
+
+.comparison-tab:hover {
+    background-color: #2c313a;
+}
+
+.comparison-tab.active {
+    color: #61afef;
+    border-bottom-color: #61afef;
+}
+
+.comparison-view {
+    padding: 15px 0;
+}
+
+/* Side by Side View */
+.side-by-side-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+}
+
+.job-column {
+    flex: 1;
+    min-width: 300px;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.job-column-header {
+    background-color: #2c313a;
+    padding: 10px;
+    border-bottom: 1px solid #3a3f4b;
+}
+
+.job-column-title {
+    font-weight: 500;
+    color: #e5c07b;
+    margin-bottom: 5px;
+}
+
+.job-column-subtitle {
+    font-size: 0.9em;
+    color: #abb2bf;
+}
+
+.job-column-body {
+    margin: 0;
+    padding: 10px;
+    background-color: #21252b;
+    max-height: 500px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+/* Similarity Analysis View */
+.similarity-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 20px;
+}
+
+.similarity-table th {
+    background-color: #2c313a;
+    padding: 10px;
+    text-align: left;
+}
+
+.similarity-table td {
+    padding: 10px;
+    border-bottom: 1px solid #3a3f4b;
+}
+
+.similarity-cell {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Color coding for similarity */
+.very-similar {
+    background-color: rgba(152, 195, 121, 0.2);
+    color: #98c379;
+}
+
+.similar {
+    background-color: rgba(152, 195, 121, 0.1);
+    color: #98c379;
+}
+
+.somewhat-similar {
+    background-color: rgba(229, 192, 123, 0.1);
+    color: #e5c07b;
+}
+
+.less-similar {
+    background-color: rgba(224, 108, 117, 0.1);
+    color: #e06c75;
+}
+
+.not-similar {
+    background-color: rgba(224, 108, 117, 0.2);
+    color: #e06c75;
+}
+
+.similarity-notes {
+    background-color: #21252b;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+
+.similarity-notes h4 {
+    color: #e5c07b;
+    margin-top: 0;
+}
+
+.similarity-notes ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.similarity-notes li {
+    margin-bottom: 15px;
+}
+
+.overall-similarity {
+    font-weight: 500;
+    color: #61afef;
+}
+
+/* Difference View - IMPROVED VERSION */
+.diff-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #3a3f4b;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.diff-header {
+    display: flex;
+    background-color: #2c313a;
+}
+
+.diff-title {
+    flex: 1;
+    padding: 10px;
+    font-weight: 500;
+    color: #e5c07b;
+    text-align: center;
+    border-right: 1px solid #3a3f4b;
+}
+
+.diff-title:last-child {
+    border-right: none;
+}
+
+.diff-content {
+    display: flex;
+}
+
+.diff-column {
+    flex: 1;
+    padding: 15px;
+    overflow-x: auto;
+    line-height: 1.6;
+    border-right: 1px solid #3a3f4b;
+    background-color: #21252b;
+    white-space: normal; /* Allow wrapping */
+}
+
+.diff-column:last-child {
+    border-right: none;
+}
+
+/* Add the new highlighting styles */
+.diff-highlight {
+    background-color: rgba(224, 108, 117, 0.2);
+    color: #e06c75;
+    border-left: 3px solid #e06c75;
+    padding: 2px 0 2px 8px;
+    margin: 2px 0;
+    display: inline-block;
+}
+
+/* Partial difference - similar content */
+.diff-partial {
+    background-color: rgba(229, 192, 123, 0.1);
+    color: #e5c07b;
+    border-left: 3px solid #e5c07b;
+    padding: 2px 0 2px 8px;
+    margin: 2px 0;
+    display: inline-block;
+}
+
+/* Add legend to explain the highlighting */
+.diff-legend {
+    display: flex;
+    padding: 10px 15px;
+    background-color: #2c313a;
+    border-top: 1px solid #3a3f4b;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.diff-legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: #abb2bf;
+}
+
+.diff-legend-color {
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    border-radius: 3px;
+}
+
+.diff-legend-color.unchanged {
+    background-color: transparent;
+    border: 1px solid #3a3f4b;
+}
+
+.diff-legend-color.partial {
+    background-color: rgba(229, 192, 123, 0.1);
+    border-left: 3px solid #e5c07b;
+}
+
+.diff-legend-color.different {
+    background-color: rgba(224, 108, 117, 0.2);
+    border-left: 3px solid #e06c75;
+}
+
+/* Semantic difference summary */
+.semantic-diff-summary {
+    background-color: #2c313a;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 6px;
+    border: 1px solid #3a3f4b;
+}
+
+.semantic-diff-summary h4 {
+    color: #e5c07b;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.semantic-diff-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.semantic-diff-list li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.semantic-diff-list li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #61afef;
+}
+
+.multi-diff-container {
+    padding: 15px;
+    background-color: #21252b;
+    border-radius: 6px;
+}
+
+.multi-diff-container h4, .multi-diff-container h5 {
+    color: #e5c07b;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.unique-words-list {
+    column-count: 3;
+    column-gap: 20px;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.unique-words-list li {
+    padding: 3px 0;
+    color: #abb2bf;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .filter-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .sort-options {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .sort-options select {
+        max-width: 100%;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .side-by-side-container {
+        flex-direction: column;
+    }
+    
+    .diff-content {
+        flex-direction: column;
+    }
+    
+    .diff-column {
+        border-right: none;
+        border-bottom: 1px solid #3a3f4b;
+    }
+    
+    .diff-column:last-child {
+        border-bottom: none;
+    }
+    
+    .unique-words-list {
+        column-count: 1;
+    }
+}

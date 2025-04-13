@@ -2,11 +2,137 @@
 
 {% block title %}Job List{% endblock %}
 
+{% block head_extra %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='job_filtering.css') }}">
+{% endblock %}
+
 {% block content %}
     <h2>Job List</h2>
     {% if api_error %}
         <p class="alert alert-danger">{{ api_error }}</p>
     {% endif %}
+<div class="filter-sort-controls">
+    <div class="filter-section">
+        <h3>Filters</h3>
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>Scenario:</label>
+                <select id="scenario-filter" class="form-control">
+                    <option value="all">All Scenarios</option>
+                    <!-- Populated via JavaScript -->
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Status:</label>
+                <select id="status-filter" class="form-control">
+                    <option value="all">All Status</option>
+                    <option value="success">Success</option>
+                    <option value="partial">Partial Success</option>
+                    <option value="failed">Failed</option>
+                    <option value="processing">Processing</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Objective Success:</label>
+                <select id="objective-filter" class="form-control">
+                    <option value="all">All Objectives</option>
+                    <option value="exfil.sent">exfil.sent</option>
+                    <option value="exfil.destination">exfil.destination</option>
+                    <option value="exfil.content">exfil.content</option>
+                    <option value="defense.undetected">defense.undetected</option>
+                    <option value="email.retrieved">email.retrieved</option>
+                </select>
+                <select id="objective-status" class="form-control">
+                    <option value="any">Any</option>
+                    <option value="success">Success</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>Search Subject:</label>
+                <input type="text" id="subject-search" class="form-control" placeholder="Search in subject...">
+            </div>
+            
+            <div class="filter-group tags-filter">
+                <label>Tags:</label>
+                <div id="tags-container" class="tags-container">
+                    <!-- Tags will be populated here via JavaScript -->
+                </div>
+                <button id="manage-tags-btn" class="btn btn-sm btn-secondary">Manage Tags</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sort-section">
+        <h3>Sort By</h3>
+        <div class="sort-options">
+            <select id="sort-by" class="form-control">
+                <option value="date-desc">Date (Newest First)</option>
+                <option value="date-asc">Date (Oldest First)</option>
+                <option value="scenario">Scenario</option>
+                <option value="success-rate">Success Rate</option>
+                <option value="similarity">Similarity to Selected</option>
+            </select>
+            
+            <button id="apply-filters-btn" class="btn btn-primary">Apply</button>
+            <button id="reset-filters-btn" class="btn btn-secondary">Reset</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Tag Modal -->
+<div id="tag-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h3>Manage Tags</h3>
+        <div class="tag-management">
+            <div class="add-tag-form">
+                <input type="text" id="new-tag-input" class="form-control" placeholder="New tag name">
+                <button id="add-tag-btn" class="btn btn-primary">Add Tag</button>
+            </div>
+            <div id="all-tags-container" class="all-tags-container">
+                <!-- All available tags will be shown here -->
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button id="tag-modal-close-btn" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Job Selection Modal for Similarity Comparison -->
+<div id="similarity-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h3>Select Reference Job</h3>
+        <p>Choose a job to compare similarity against:</p>
+        <div id="reference-jobs-list" class="reference-jobs-list">
+            <!-- Jobs will be populated here -->
+        </div>
+        <div class="modal-actions">
+            <button id="similarity-modal-close-btn" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Tag to Job Modal -->
+<div id="add-tag-job-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h3>Add Tag to Job</h3>
+        <div class="tag-selection">
+            <select id="tag-select-dropdown" class="form-control">
+                <!-- Available tags will be populated here -->
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button id="add-tag-job-cancel-btn" class="btn btn-secondary">Cancel</button>
+            <button id="add-tag-job-confirm-btn" class="btn btn-primary">Add Tag</button>
+        </div>
+    </div>
+</div>
 
     <div class="job-list-container">
         {% if jobs %}
@@ -23,7 +149,7 @@
                     {% endif %}
                 {% endif %}
 
-                <div class="job-box status-{{ 'completed' if job.is_completed else 'processing' }} {% if all_objectives_true %}status-success{% elif has_failed_objectives %}status-failed{% endif %}">
+                <div class="job-box status-{{ 'completed' if job.is_completed else 'processing' }} {% if all_objectives_true %}status-success{% elif has_failed_objectives %}status-failed{% endif %}" data-job-id="{{ job.job_id }}">
                     <div class="job-box-header">
                         <span class="job-scenario">{{ job.scenario }}</span>
                         <span class="job-subject">{{ job.subject | truncate(50) }}</span> {# Truncate long subjects #}
@@ -61,10 +187,24 @@
                             <span class="job-status-label">Processing...</span>
                         {% endif %}
                     </div>
-                     <div class="job-box-actions">
-                         <span class="job-time datetime-iso" data-iso-date="{{ job.scheduled_time }}">{{ job.scheduled_time }}</span>
-                         <a href="{{ url_for('get_job_route', job_id=job.job_id) }}" class="btn btn-secondary btn-sm">View Details</a>
-                     </div>
+                    <!-- Add job tags section -->
+                    <div class="job-box-tags">
+                        <div class="job-tags-container" data-job-id="{{ job.job_id }}">
+                            <!-- Tags will be populated via JavaScript -->
+                        </div>
+                    </div>
+                    <div class="job-box-actions">
+                        <span class="job-time datetime-iso" data-iso-date="{{ job.scheduled_time }}">{{ job.scheduled_time }}</span>
+                        <div class="job-action-buttons">
+                            <button class="btn btn-sm btn-outline-secondary copy-job-btn" data-job-id="{{ job.job_id }}" title="Copy this job">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button class="btn btn-sm btn-outline-success add-tag-btn" data-job-id="{{ job.job_id }}" title="Add tag to this job">
+                                <i class="fas fa-tag"></i> Tag
+                            </button>
+                            <a href="{{ url_for('get_job_route', job_id=job.job_id) }}" class="btn btn-secondary btn-sm">View Details</a>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
@@ -81,8 +221,9 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="{{ url_for('static', filename='job_filtering.js') }}"></script>
     <script>
-        // Function to format ISO date string to local date/time
+        // Keep the existing date formatting code
         function formatIsoDateToLocal(isoString) {
             if (!isoString) return '-';
             try {
@@ -106,4 +247,4 @@
             });
         });
     </script>
-{% endblock %} 
+{% endblock %}
